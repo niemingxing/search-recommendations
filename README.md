@@ -23,4 +23,4 @@
 浏览和搜索: 在弹出的窗口中，
 
 交流方式：
-<img src="https://i.ibb.co/StH3rcz/Wechat-IMG1500.jpg" alt="微信交流" style="max-width: 200px; height: auto;">
+![vx:histargo](https://i.ibb.co/StH3rcz/Wechat-IMG1500.jpg)
