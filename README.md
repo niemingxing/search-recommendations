@@ -23,4 +23,4 @@
 浏览和搜索: 在弹出的窗口中，
 
 交流方式：
-vx:histargo
+![vx:histargo](https://i.ibb.co/KsXF9YV/WX20230617-214639-2x.png)
