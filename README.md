@@ -23,4 +23,4 @@
 浏览和搜索: 在弹出的窗口中，
 
 交流方式：
-![vx:histargo](https://i.ibb.co/StH3rcz/Wechat-IMG1500.jpg)
+![vx:histargo](https://i.ibb.co/StH3rcz/Wechat-IMG1500.jpg=200x)
