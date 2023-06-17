@@ -1,0 +1,39 @@
+{
+	"manifest_version": 3,
+	"name": "小红书搜索推荐词提取器",
+	"version": "1.0",
+	"description": "提取小红书搜索推荐词，小红书关键词挖掘分析的不二利器",
+	"author": "niemingxing",
+	"icons":
+	{
+		"48": "icon.png",
+		"128": "icon.png"
+	},
+	"action":
+	{
+		"default_icon": "icon.png",
+		"default_popup": "popup.html"
+	},
+	"background":
+	{
+		"service_worker": "js/background.js"
+	},
+	"host_permissions": [
+		"http://*/*",
+		"https://*/*"
+	],
+	"content_scripts": 
+	[
+		{
+			"matches": ["https://www.xiaohongshu.com/*","https://www.douyin.com/*","https://www.bilibili.com/*"],
+			"js": ["js/jquery.min.js","js/content-script.js"]
+		}
+	],
+	"web_accessible_resources":
+	[
+		{
+			"resources" : ["js/inject.js"],
+			"matches": []
+		}
+	]
+}
