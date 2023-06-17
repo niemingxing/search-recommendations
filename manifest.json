@@ -1,8 +1,8 @@
 {
 	"manifest_version": 3,
-	"name": "小红书搜索推荐词提取器",
+	"name": "搜索推荐词采集助手",
 	"version": "1.0",
-	"description": "提取小红书搜索推荐词，小红书关键词挖掘分析的不二利器",
+	"description": "提取小红书、抖音、bilibili搜索推荐词，关键词挖掘分析的不二利器",
 	"author": "niemingxing",
 	"icons":
 	{
