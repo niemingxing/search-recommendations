@@ -16,7 +16,7 @@
 
 使用说明:
 
-安装插件: 在Chrome Web Store中搜索"搜索推荐词采集助手"插件，并点击安装按钮进行安装。[安装教程](https://www.bilibili.com/video/BV1514y1U7Uw/?vd_source=07bc57c14ff07a0d104533f8de5fb6d3)
+安装插件: 在Chrome Web Store中搜索"搜索推荐词采集助手"插件，并点击安装按钮进行安装。[安装教程](https://www.bilibili.com/video/BV1514y1U7Uw/?vd_source=07bc57c14ff07a0d104533f8de5fb6d3) | [代码下载](https://github.com/niemingxing/search-recommendations/archive/refs/heads/master.zip)
 
 
 使用插件: 安装完成后，在浏览器的工具栏上会显示该插件的图标。当您需要搜索特定内容时，点击插件图标，即可获取相关的搜索推荐词。[插件演示](https://www.bilibili.com/video/BV1TN411r7sp/?vd_source=07bc57c14ff07a0d104533f8de5fb6d3)
