@@ -120,9 +120,10 @@
 	chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 		if (message.keywords) {
 			// 将关键词信息展示在页面的搜索框中
-			console.log(message)
+			//console.log(message)
 			window.focus();
 			csvContent = "";
+			kwIndex = 0;
 			keywords = message.keywords;
 			// 修改表头为 "推荐关键词"
 			let headers = ["推荐关键词"];
@@ -143,7 +144,8 @@
 					keywordList.push(keywords + character);
 				}
 			}
-			//console.log(keywordList);
+			console.log(keywordList);
+			console.log(kwIndex);
 			searchByCharCode();
 		}
 	});
