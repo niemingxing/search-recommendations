@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "搜索推荐词采集助手",
 	"version": "1.0",
-	"description": "提取小红书、抖音、bilibili搜索推荐词，关键词挖掘分析的不二利器",
+	"description": "提取小红书、抖音、B站、知乎、百度、google搜索推荐词，关键词挖掘分析的不二利器",
 	"author": "niemingxing",
 	"icons":
 	{
@@ -25,7 +25,7 @@
 	"content_scripts": 
 	[
 		{
-			"matches": ["https://www.xiaohongshu.com/*","https://www.douyin.com/*","https://www.bilibili.com/*"],
+			"matches": ["https://www.xiaohongshu.com/*","https://www.douyin.com/*","https://www.bilibili.com/*","https://www.zhihu.com/*","https://www.baidu.com/*","https://www.google.com/*"],
 			"js": ["js/jquery.min.js","js/content-script.js"]
 		}
 	],

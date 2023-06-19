@@ -22,7 +22,18 @@
 			else if(currentDomain.includes("bilibili"))
 			{
 				result = document.querySelector('.nav-search-input');
-				console.log(result);
+			}
+			else if(currentDomain.includes("zhihu"))
+			{
+				result = document.querySelector('form.SearchBar-tool input[type=text]');
+			}
+			else if(currentDomain.includes("baidu"))
+			{
+				result = document.querySelector('#kw');
+			}
+			else if(currentDomain.includes("google"))
+			{
+				result = document.querySelector('form[role="search"] textarea');
 			}
 
 		}
@@ -40,7 +51,18 @@
 			{
 				result = document.querySelectorAll("div.suggestions div.suggest-item");
 			}
-
+			else if(currentDomain.includes("zhihu"))
+			{
+				result = document.querySelectorAll('div.Menu-item');
+			}
+			else if(currentDomain.includes("baidu"))
+			{
+				result = document.querySelectorAll('ul li.bdsug-overflow');
+			}
+			else if(currentDomain.includes("google"))
+			{
+				result = document.querySelectorAll('ul[role="listbox"] li[role="presentation"] div[role="option"] div[role="presentation"]:first-child');
+			}
 		}
 
 		return result;
