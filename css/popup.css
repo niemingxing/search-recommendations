@@ -1,0 +1,62 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: center; /* 新增：文本居中显示 */
+}
+
+.input-field {
+    margin-top: 10px;
+    margin-bottom: 10px; /* 修改：增加距离 */
+}
+
+.input-field textarea {
+    width: 100%; /* 修改：宽度占满容器 */
+    min-height: 100px; /* 新增：设置最小高度 */
+    border: none;
+    padding: 10px;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    resize: vertical; /* 新增：允许垂直拖拽调整大小 */
+}
+
+.input-field button {
+    display: block; /* 修改：按钮以块级元素显示 */
+    margin: 10px auto 0; /* 修改：增加上边距和居中显示 */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    background-color: #4CAF50;
+    color: #fff;
+    cursor: pointer;
+}
+
+.input-field button:hover {
+    background-color: #45a049;
+}
+
+.settings-icon {
+    position: absolute; /* 新增：设置绝对定位 */
+    top: 5px; /* 新增：距离顶部位置 */
+    right: 5px; /* 新增：距离右侧位置 */
+    font-size: 12px;
+    color: #999;
+    cursor: pointer;
+}

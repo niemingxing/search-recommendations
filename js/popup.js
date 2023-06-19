@@ -10,3 +10,7 @@
         chrome.tabs.sendMessage(tabs[0].id, { keywords: keywords , closePopup: true});
     });
 });
+
+document.getElementById('openOptions').addEventListener('click', function() {
+    chrome.runtime.openOptionsPage();
+});

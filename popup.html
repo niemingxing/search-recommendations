@@ -3,60 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>搜索推荐词采集助手</title>
-	<style>
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
-		}
-
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f2f2f2;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100vh;
-		}
-
-		.container {
-			background-color: #fff;
-			border-radius: 5px;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-			padding: 20px;
-			width: 300px;
-			text-align: center; /* 新增：文本居中显示 */
-		}
-
-		.input-field {
-			margin-bottom: 20px; /* 修改：增加距离 */
-		}
-
-		.input-field textarea {
-			width: 100%; /* 修改：宽度占满容器 */
-			min-height: 100px; /* 新增：设置最小高度 */
-			border: none;
-			padding: 10px;
-			border-radius: 3px;
-			background-color: #f2f2f2;
-			resize: vertical; /* 新增：允许垂直拖拽调整大小 */
-		}
-
-		.input-field button {
-			display: block; /* 修改：按钮以块级元素显示 */
-			margin: 10px auto 0; /* 修改：增加上边距和居中显示 */
-			border: none;
-			padding: 10px 20px;
-			border-radius: 3px;
-			background-color: #4CAF50;
-			color: #fff;
-			cursor: pointer;
-		}
-
-		.input-field button:hover {
-			background-color: #45a049;
-		}
-	</style>
+	<link rel="stylesheet" href="css/popup.css">
 </head>
 <body>
 <div class="container">
@@ -64,6 +11,7 @@
 		<textarea id="keywords" placeholder="请输入关键词(支持换行输入多关键词,不换行自动抓取关键词在内的从[A-Z]的推荐词，当前支持抖音、小红书、B站、知乎、百度、google)"></textarea> <!-- 修改：使用 textarea 元素 -->
 		<button id="submit">提取推荐词</button>
 	</div>
+	<span id="openOptions" class="settings-icon">设置</span>
 </div>
 </body>
 <script type="text/javascript" src="js/jquery.min.js"></script>

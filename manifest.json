@@ -14,6 +14,7 @@
 		"default_icon": "icon.png",
 		"default_popup": "popup.html"
 	},
+	"options_page": "options.html",
 	"background":
 	{
 		"service_worker": "js/background.js"
@@ -35,5 +36,8 @@
 			"resources" : ["js/inject.js"],
 			"matches": []
 		}
+	],
+	"permissions": [
+		"storage"
 	]
 }
