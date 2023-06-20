@@ -100,7 +100,7 @@ $("#submit").click(function (){
     }
     else if(mKey == '')
     {
-        showPopup("没有配置mKey，请点击右上角设置配置！");
+        showPopup("没有配置密钥,请点击右上角设置！");
         submitButton.disabled = false;
         return;
     }
