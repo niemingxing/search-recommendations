@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // 在这里使用存储的值
         console.log(mKey);
     });
+
+    chrome.storage.sync.get('keywords', function (data) {
+        $("#keywords").val(data.keywords);
+        console.log("keywords:"+data.keywords);
+    });
 });
 // 获取弹窗元素
 const popup = document.getElementById('popup');
@@ -99,5 +104,8 @@ $("#submit").click(function (){
         submitButton.disabled = false;
         return;
     }
-    checkMKey(sendSearchMessage)
+
+    chrome.storage.sync.set({ 'keywords': keywords }, function() {
+        checkMKey(sendSearchMessage);
+    });
 });
