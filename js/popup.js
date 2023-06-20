@@ -1,5 +1,6 @@
 ﻿let mKey = '';
 let keywords = '';
+let submitButton;
 document.getElementById('openOptions').addEventListener('click', function() {
     chrome.runtime.openOptionsPage();
 });
@@ -12,6 +13,28 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log(mKey);
     });
 });
+// 获取弹窗元素
+const popup = document.getElementById('popup');
+
+// 获取关闭按钮元素
+const closeButton = document.getElementById('closePopupBtn');
+
+// 获取错误提示元素
+const errorText = document.getElementById('message');
+
+// 显示弹窗并设置错误提示文字
+function showPopup(message) {
+    errorText.textContent = message;
+    popup.style.display = 'block';
+}
+
+// 关闭弹窗
+function closePopup() {
+    popup.style.display = 'none';
+}
+
+// 点击关闭按钮关闭弹窗
+closeButton.addEventListener('click', closePopup);
 
 /**
  * 发送搜索消息
@@ -44,28 +67,36 @@ function checkMKey(callback)
     .then(response => response.json())
     .then(json => {
         console.log(json)
+        submitButton.disabled = false;
         if(json.hasOwnProperty("code") && json.code !=0)
         {
-            alert(json.message);
+            showPopup(json.message);
         }
         else if(json.hasOwnProperty("code") && json.code ==0)
         {
             if(callback) callback();
         }
     })
-    .catch(err => alert('Request Failed', err));
+    .catch(err => {
+        submitButton.disabled = false;
+        alert('Request Failed', err);
+    });
 }
 
 $("#submit").click(function (){
+    submitButton = this;
+    submitButton.disabled = true;
     keywords = $("#keywords").val();
     if(keywords.trim() == '')
     {
-        alert("输入不可以为空！");
+        showPopup("输入不可以为空！");
+        submitButton.disabled = false;
         return;
     }
     else if(mKey == '')
     {
-        alert("没有配置mKey，请点击右上角设置配置！");
+        showPopup("没有配置mKey，请点击右上角设置配置！");
+        submitButton.disabled = false;
         return;
     }
     checkMKey(sendSearchMessage)

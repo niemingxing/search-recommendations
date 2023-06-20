@@ -52,6 +52,11 @@ body {
     background-color: #45a049;
 }
 
+.input-field button:disabled {
+    opacity: 0.6; /* 按钮变灰的透明度 */
+    cursor: not-allowed; /* 鼠标样式变为禁用样式 */
+}
+
 .settings-icon {
     position: absolute; /* 新增：设置绝对定位 */
     top: 5px; /* 新增：距离顶部位置 */
@@ -60,3 +65,67 @@ body {
     color: #999;
     cursor: pointer;
 }
+
+.custom-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+.custom-popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1001;
+}
+
+.custom-popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #FFF;
+    color: #000;
+    text-align: center;
+    border-radius: 6px;
+    padding: 15px 15px 5px 15px;
+    z-index: 1002;
+}
+
+.custom-popup-question {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.custom-popup-close-btn {
+    display: inline-block;
+    padding: 5px 0;
+    background-color: #FFF;
+    color: #45a049;
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    border-top: 1px solid #F2F2F2;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.custom-popup-close-btn:last-child {
+    margin-right: 0;
+}
+
+
+
+
+
+
+
