@@ -6,12 +6,13 @@
 	"author": "niemingxing",
 	"icons":
 	{
-		"48": "icon.png",
-		"128": "icon.png"
+		"16":"icon16.png",
+		"48":"icon48.png",
+		"128":"icon128.png"
 	},
 	"action":
 	{
-		"default_icon": "icon.png",
+		"default_icon": "icon16.png",
 		"default_popup": "popup.html"
 	},
 	"options_page": "options.html",
@@ -26,18 +27,33 @@
 	"content_scripts": 
 	[
 		{
-			"matches": ["https://www.xiaohongshu.com/*","https://www.douyin.com/*","https://www.bilibili.com/*","https://www.zhihu.com/*","https://www.baidu.com/*","https://www.google.com/*"],
-			"js": ["js/jquery.min.js","js/content-script.js"]
+			"matches": ["https://www.xiaohongshu.com/*","https://www.douyin.com/*","https://www.bilibili.com/*","https://www.zhihu.com/*","https://www.baidu.com/*","https://www.google.com/*","https://chat.openai.com/*"],
+			"js": ["js/jquery.min.js","js/content-script.js"],
+			"css": [
+				"css/gpt_keywords_list.css"
+			]
 		}
 	],
 	"web_accessible_resources":
 	[
 		{
-			"resources" : ["js/inject.js"],
-			"matches": []
+			"resources" : ["css/gpt_keywords_list.css"],
+			"matches": [
+				"*://chat.openai.com/*"
+			]
+		},
+		{
+			"resources": [
+				"style/extension.css",
+				"script/extension.js"
+			],
+			"matches": [
+				"https://example.com/*"
+			]
 		}
 	],
 	"permissions": [
-		"storage"
+		"storage",
+		"activeTab"
 	]
 }

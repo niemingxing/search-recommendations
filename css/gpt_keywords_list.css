@@ -1,0 +1,119 @@
+.gpt-sr-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.gpt-sr-sidebar {
+    position: relative;
+    width: 35px;
+    background-color: #f2f2f2;
+    text-align: center;
+}
+#gpt-sr-toggleButton {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    padding: 10px 10px;
+    background-color: #45a049;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.gpt-sr-popup {
+    position: fixed;
+    top: 0;
+    left: 100%;
+    width: 0;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    transition: left 0.3s ease-in-out;
+    z-index: 999;
+}
+.gpt-sr-popup.gpt-sr-active {
+    left: calc(100% - 400px);
+    width: 400px;
+}
+.gpt-sr-content {
+    padding: 5px 20px 20px 20px;
+}
+.gpt-sr-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 18px;
+}
+.gpt-sr-list {
+    list-style: none;
+    padding: 0;
+    max-height: 100%;
+    overflow-y: auto;
+}
+.gpt-sr-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+}
+.gpt-sr-list-item:last-child {
+    margin-bottom: 0;
+}
+.gpt-sr-keyword {
+    width: 200px;
+    white-space: nowrap; /* 不换行 */
+    overflow: hidden; /* 溢出部分隐藏 */
+    text-overflow: ellipsis; /* 使用省略号替代溢出部分 */
+}
+.gpt-sr-status {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #888;
+}
+.gpt-sr-actions {
+    display: flex;
+    gap: 10px;
+}
+.gpt-sr-actions button {
+    padding: 5px 10px;
+    background-color: #45a049;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+.gpt-sr-close-btn {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #888;
+}
+
+.unresolved {
+    color: #F24C3D;
+}
+
+.generating {
+    color: #eec80c;
+}
+
+.generated {
+    color: #f26b22;
+}
+
+.published {
+    color: #45a049;
+}

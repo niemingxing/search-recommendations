@@ -1,22 +1,53 @@
 ﻿let mKey = '';
 let keywords = '';
 let submitButton;
-document.getElementById('openOptions').addEventListener('click', function() {
-    chrome.runtime.openOptionsPage();
-});
+let toolType = '';
 
 document.addEventListener('DOMContentLoaded', function () {
     // 获取存储的值
-    chrome.storage.sync.get('mkey', function (data) {
-        mKey = data.mkey;
+    chrome.storage.local.get('setting', function (data) {
+        mKey = data.setting.mkey;
         // 在这里使用存储的值
         console.log(mKey);
+        chrome.runtime.sendMessage({"type":"init_setting","setting":data.setting}, function (response) {
+            console.log(response.farewell)
+        });
     });
 
-    chrome.storage.sync.get('keywords', function (data) {
+    chrome.storage.local.get('keywords', function (data) {
         $("#keywords").val(data.keywords);
-        console.log("keywords:"+data.keywords);
     });
+
+    chrome.storage.local.get('pga_keywords', function (data) {
+        $("#pga_keywords").val(data.pga_keywords);
+    });
+
+
+    document.getElementById('openOptions').addEventListener('click', function() {
+        chrome.runtime.openOptionsPage();
+    });
+
+    document.getElementById("moreButton").addEventListener("click", function() {
+        chrome.tabs.create({ url: "https://www.idnsl.xyz" });
+    });
+
+
+    // 获取当前标签页的 URL
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        var currentUrl = tabs[0].url;
+        console.log(currentUrl);
+        // 根据当前 URL 判断展示的页面
+        if (currentUrl.includes('chat.openai.com')) {
+            document.getElementById('pageSearchKeywords').style.display = 'none';
+            document.getElementById('pageGptArticle').style.display = 'block';
+            toolType = 'chatgpt_create_article';
+        } else {
+            document.getElementById('pageSearchKeywords').style.display = 'block';
+            document.getElementById('pageGptArticle').style.display = 'none';
+            toolType = 'collect_search_keywords';
+        }
+    });
+
 });
 // 获取弹窗元素
 const popup = document.getElementById('popup');
@@ -48,7 +79,7 @@ function sendSearchMessage()
 {
     // 向 content-scripts.js 发送消息，包含关键词信息
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { keywords: keywords});
+        chrome.tabs.sendMessage(tabs[0].id, { keywords: keywords,type:toolType});
     });
 }
 /**
@@ -105,7 +136,29 @@ $("#submit").click(function (){
         return;
     }
 
-    chrome.storage.sync.set({ 'keywords': keywords }, function() {
+    chrome.storage.local.set({ 'keywords': keywords }, function() {
+        checkMKey(sendSearchMessage);
+    });
+});
+
+$("#pga_submit").click(function (){
+    submitButton = this;
+    submitButton.disabled = true;
+    keywords = $("#pga_keywords").val();
+    if(keywords.trim() == '')
+    {
+        showPopup("输入不可以为空！");
+        submitButton.disabled = false;
+        return;
+    }
+    else if(mKey == '')
+    {
+        showPopup("没有配置密钥,请点击右上角设置！");
+        submitButton.disabled = false;
+        return;
+    }
+
+    chrome.storage.local.set({ 'pga_keywords': keywords }, function() {
         checkMKey(sendSearchMessage);
     });
 });

@@ -7,10 +7,16 @@
 </head>
 <body>
 <div class="container">
-	<div class="input-field">
+	<div id="pageSearchKeywords" class="input-field">
 		<textarea id="keywords" placeholder="请输入关键词(支持换行输入多关键词,不换行自动抓取关键词在内的从[A-Z]的推荐词，当前支持抖音、小红书、B站、知乎、百度、google)"></textarea> <!-- 修改：使用 textarea 元素 -->
 		<button id="submit">提取推荐词</button>
 	</div>
+
+	<div id="pageGptArticle" class="input-field" style="display: none">
+		<textarea id="pga_keywords" placeholder="请输入文章主题关键词，多关键词请换行，每行循环替换提示词里面的[keywords]字符，每个关键词文章以START:[keywords]开始，END:[keywords]结束"></textarea> <!-- 修改：使用 textarea 元素 -->
+		<button id="pga_submit">批量生成文章</button>
+	</div>
+
 	<div id="popup" class="custom-popup">
 		<div class="custom-popup-overlay"></div>
 		<div class="custom-popup-content">
@@ -19,6 +25,7 @@
 		</div>
 	</div>
 	<span id="openOptions" class="settings-icon">设置</span>
+	<span id="moreButton" class="more-icon">更多</span>
 </div>
 </body>
 <script type="text/javascript" src="js/jquery.min.js"></script>
