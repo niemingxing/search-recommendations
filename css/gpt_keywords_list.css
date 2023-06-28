@@ -81,15 +81,21 @@
 }
 .gpt-sr-actions {
     display: flex;
-    gap: 10px;
+    gap: 5px;
 }
 .gpt-sr-actions button {
-    padding: 5px 10px;
+    padding: 2px 8px;
     background-color: #45a049;
     color: #fff;
     border: none;
     cursor: pointer;
 }
+.gpt-sr-popup button:disabled {
+    background-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+}
+
 .gpt-sr-close-btn {
     position: absolute;
     top: 0px;
@@ -100,6 +106,19 @@
     cursor: pointer;
     font-size: 20px;
     color: #888;
+}
+
+.gpt-sr-starting-btn {
+    position: absolute;
+    top: 10px;
+    right: 40px;
+    font-size: 14px;
+    padding: 2px 8px;
+    background-color: #45a049;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+
 }
 
 .unresolved {
@@ -116,4 +135,8 @@
 
 .published {
     color: #45a049;
+}
+
+.queuing{
+    color: #25b9c7;
 }

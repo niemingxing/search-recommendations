@@ -8,8 +8,10 @@
 	let currentKeywords = "";
 	let hasCompleteKeywords = [];
 	let noCompleteKeywords = [];
-	let statusMap = {0:"未处理",1:"已生成",2:"已发布",3:"生成中"};
-	let statusColorClassMap = {0:'unresolved',1:'generated',2:'published',3:'generating'};
+	let statusMap = {0:"未处理",1:"已生成",2:"已发布",3:"生成中",4:"排队中"};
+	let statusColorClassMap = {0:'unresolved',1:'generated',2:'published',3:'generating',4:'queuing'};
+	let generateArticleTime = 0,generateArticleStartTime = 0;
+
 	/**
 	 * 获取必要的dom对象
 	 * @param $type
@@ -202,10 +204,9 @@
 	function chatGptCreateArticle(data)
 	{
 		window.focus();
-		hasCompleteKeywords = [];
-		noCompleteKeywords = [];
+		//hasCompleteKeywords = [];
+		//noCompleteKeywords = [];
 		keywords = data.keywords;
-		kwIndex = 0;
 		keywordList = keywords.split("\n").filter(function(value, index, self) {
 			// 过滤掉空字符串和重复元素
 			return value.trim() !== "" && self.indexOf(value) === index;
@@ -229,18 +230,31 @@
 	/**
 	 * 发送prompt请求
 	 */
-	function sendCreatePrompt()
+	function sendCreatePrompt(type = 1)
 	{
 		let prompt_textarea = document.querySelector('#prompt-textarea');
 		if(prompt_textarea) {
 			//点击按钮发送prompt
-			currentKeywords = noCompleteKeywords[kwIndex];
-			let prompt = "你接下来会作为我的写作助手，围绕提供的关键词生成文章标题和文章内容，每篇文章不低于1500字，全部内容输出以'[START:keywords]'标签开始，'[END:keywords]'标签结束，keywords替换为我提供的关键词，文章标题放在'[TITLE]'标签和'[/TITLE]'标签中间，文章标题和文章内容都以纯文本形式输出，不包含任何特殊格式或标记，这样的格式可以方便我后面轻松地进行文本处理和提取关键信息。现在我提供的关键词是：```{{keywords}}``"
-			prompt = prompt.replace("{keywords}", currentKeywords);
 			let prompt_button = document.querySelector('#prompt-textarea + button');
-			inputDispatchEventEvent(prompt_textarea, prompt);
-			prompt_button.click();
-			updateKeywordsListItemElement(currentKeywords,{'title':currentKeywords,'status':3,'status_text':statusMap[3]});
+			if(type ==1)
+			{
+				let prompt = "你接下来会作为我的写作助手，围绕提供的关键词生成文章标题和文章内容，每篇文章不低于1500字，全部内容输出以'[START:keywords]'标签开始，'[END:keywords]'标签结束，keywords替换为我提供的关键词，文章标题放在'[TITLE]'标签和'[/TITLE]'标签中间，文章标题和文章内容都以纯文本形式输出，不包含任何特殊格式或标记，这样的格式可以方便我后面轻松地进行文本处理和提取关键信息。现在我提供的关键词是：```{{keywords}}``"
+				prompt = prompt.replace("{keywords}", currentKeywords);
+				inputDispatchEventEvent(prompt_textarea, prompt);
+				setTimeout(function (){
+					prompt_button.click();
+				},500);
+				updateKeywordsListItemElement(currentKeywords,{'title':currentKeywords,'status':3,'status_text':statusMap[3]});
+				generateArticleStartTime = new Date().getTime();
+			}
+			else if(type == 2)
+			{
+				if(prompt_textarea.value.trim() != "")
+				{
+					prompt_button.click();
+					generateArticleStartTime = new Date().getTime();
+				}
+			}
 		}
 	}
 
@@ -266,6 +280,7 @@
 			else
 			{
 				noCompleteKeywords.push(keywords);
+				updateKeywordsListItemElement(keywords,{'title':keywords,'status_text':statusMap[4],'status':4});
 			}
 		}
 		console.log(hasCompleteKeywords);
@@ -292,15 +307,7 @@
 			}
 			chrome.storage.local.set({ 'pga_keywords_dolist': doList }, function() {
 				console.log("初始化关键词完成状态！");
-				if(noCompleteKeywords.length == 0)
-				{
-					alert("没有待处理的关键词");
-				}
-				else
-				{
-					sendCreatePrompt();
-					checkCreateStatus();
-				}
+				document.querySelector("#gpt-sr-toggleButton").click();
 			});
 		});
 	}
@@ -386,19 +393,25 @@
 						addKeywordListItemElement({'title':currentKeywords,'status_text':statusMap[1],'status':1});
 					}
 					chrome.storage.local.set({ 'pga_keywords_dolist': doList }, function() {
-						console.log("["+currentKeywords+"] 完成持久化状态变更！");
+						generateArticleTime = new Date().getTime() - generateArticleStartTime;
+						console.log("["+currentKeywords+"] 完成持久化状态变更，消耗" + generateArticleTime/1000 +"秒！");
 						let parseData = parseContent(currentKeywords,content);
 						parseData['keywords'] = currentKeywords;
 						sendArticlePublishRequest({'type':'publish_article',"data":parseData});
 						while (true) {
-							kwIndex ++;
-							if(kwIndex >= noCompleteKeywords.length)
+							if(noCompleteKeywords.length === 0)
 							{
-								console.log("所有关键词文章全部生成完成！")
+								console.log("所有关键词文章全部生成完成！");
+								document.querySelector("button.gpt-sr-starting-btn").disabled = false;
 								clearInterval(intervalId);
+								if(window.Notification && Notification.permission !== "denied") {
+									Notification.requestPermission(function(status) {
+										var n = new Notification('任务完成通知', { body: "所有关键词文章全部生成完成！" });
+									});
+								}
 								return;
 							}
-							currentKeywords = noCompleteKeywords[kwIndex];
+							currentKeywords = noCompleteKeywords.shift();
 							if(doList[currentKeywords]['status'] == 0)
 							{
 								sendCreatePrompt();
@@ -408,6 +421,16 @@
 					});
 				});
 			}
+
+			if(new Date().getTime() - generateArticleStartTime > 300000)
+			{
+				if(window.Notification && Notification.permission !== "denied") {
+					Notification.requestPermission(function(status) {
+						var n = new Notification('异常通知', { body: "[" + currentKeywords + "] 文章生成异常，请及时排查问题！" });
+					});
+				}
+			}
+
 			let buttons = document.querySelectorAll('form div button');
 			for (var i = 0; i < buttons.length; i++) {
 				let buttonText = buttons[i].innerText;
@@ -418,6 +441,8 @@
 				}
 				//"Stop generating"
 			}
+			//容错由于程序响应过快导致按钮没有及时触发
+			sendCreatePrompt(2);
 		},5000);
 	}
 
@@ -460,6 +485,7 @@
 			'  \n' +
 			'  <div id="gpt-sr-popup" class="gpt-sr-popup">\n' +
 			'    <button class="gpt-sr-close-btn">&times;</button>\n' +
+			'	 <button class="gpt-sr-starting-btn">开始执行</button>\n' +
 			'    <div class="gpt-sr-content">\n' +
 			'      <h2 class="gpt-sr-title">关键词列表</h2>\n' +
 			'      <ul class="gpt-sr-list">\n' +
@@ -477,6 +503,21 @@
 		document.querySelector("button.gpt-sr-close-btn").addEventListener("click", function() {
 			var popup = document.getElementById("gpt-sr-popup");
 			popup.classList.remove("gpt-sr-active");
+		});
+
+		document.querySelector("button.gpt-sr-starting-btn").addEventListener("click", function() {
+			if(noCompleteKeywords.length == 0)
+			{
+				alert("没有待处理的关键词");
+			}
+			else
+			{
+				var currentElement = event.target;
+				currentElement.disabled = true;
+				currentKeywords = noCompleteKeywords.shift();
+				sendCreatePrompt();
+				checkCreateStatus();
+			}
 		});
 
 		document.addEventListener('click', function(event) {
@@ -503,24 +544,16 @@
 				return timestampA - timestampB;
 			});
 
-			var sortedDoList = {};
 			sortedKeys.forEach(function(key) {
-				sortedDoList[key] = doList[key];
-			});
-
-			console.log(sortedDoList);
-
-			for (var key in sortedDoList) {
-				if (sortedDoList.hasOwnProperty(key)) {
-					//status:0-未处理，1-已完成，2-已发布
+				if (doList.hasOwnProperty(key)) {
 					let data = {
 						'title' : key,
-						'status_text' : statusMap[sortedDoList[key]['status']],
-						'status':sortedDoList[key]['status']
+						'status_text' : statusMap[doList[key]['status']],
+						'status':doList[key]['status']
 					};
 					addKeywordListItemElement(data);
 				}
-			}
+			});
 		});
 	}
 
@@ -533,13 +566,14 @@
 	{
 		let itemHtml = '<span class="gpt-sr-keyword" title="' + data.title + '">' + data.title + '</span>\n' +
 			'<span class="gpt-sr-status ' + statusColorClassMap[data.status] + '">' + data.status_text + '</span>\n' +
-			'<div class="gpt-sr-actions"><button>删除</button></div>';
+			'<div class="gpt-sr-actions"><button class="gpt-sr-add" title="加入生成">+</button><button class="gpt-sr-delete" title="删除记录">-</button></div>';
 		const itemElement = document.createElement("li");
 		itemElement.classList.add("gpt-sr-list-item");
 		itemElement.setAttribute("data-key", data.title);
 		itemElement.innerHTML = itemHtml;
-		itemElement.querySelector("div.gpt-sr-actions button").addEventListener("click", function() {
+		itemElement.querySelector("div.gpt-sr-actions button.gpt-sr-delete").addEventListener("click", function() {
 			var currentElement = event.target;
+			currentElement.disabled = true;
 			var liParentElement = currentElement.parentNode.parentNode;
 			let liKeywords = liParentElement.getAttribute("data-key");
 			chrome.storage.local.get('pga_keywords_dolist', function(result) {
@@ -547,11 +581,32 @@
 				delete doList[liKeywords];
 				chrome.storage.local.set({ 'pga_keywords_dolist': doList }, function() {
 					liParentElement.remove();
+					updateKewordsListStatistics();
 				});
 			});
 		});
+		const addButton = itemElement.querySelector("div.gpt-sr-actions button.gpt-sr-add");
+		addButton.addEventListener("click",function(){
+			var currentElement = event.target;
+			currentElement.disabled = true;
+			var liParentElement = currentElement.parentNode.parentNode;
+			let liKeywords = liParentElement.getAttribute("data-key");
+			noCompleteKeywords.push(liKeywords);
+			updateKeywordsListItemElement(liKeywords,{'title':liKeywords,'status_text':statusMap[4],'status':4});
+		});
+
+		if(data.status == 0)
+		{
+			addButton.disabled = false;
+		}
+		else
+		{
+			addButton.disabled = true;
+		}
+
 		let listPanel = document.querySelector("#gpt-sr-popup ul");
 		listPanel.insertBefore(itemElement,listPanel.firstChild);
+		updateKewordsListStatistics();
 	}
 
 	/**
@@ -566,12 +621,33 @@
 		{
 			let statusElement = itemElement.querySelector("span.gpt-sr-status");
 			statusElement.textContent = data.status_text;
+
+			for (let scl in statusColorClassMap) {
+				statusElement.classList.remove(statusColorClassMap[scl]);
+			}
+
 			statusElement.classList.add(statusColorClassMap[data.status]);
+			let addButton = itemElement.querySelector("div.gpt-sr-actions button.gpt-sr-add");
+			if(data.status == 0)
+			{
+				addButton.setAttribute("disabled", false);
+			}
+			else
+			{
+				addButton.setAttribute("disabled", true);
+			}
 		}
 		else
 		{
 			addKeywordListItemElement(data);
 		}
+		updateKewordsListStatistics();
+	}
+
+	function updateKewordsListStatistics()
+	{
+		let kwItems = document.querySelectorAll("#gpt-sr-popup ul li");
+		document.querySelector("#gpt-sr-popup div.gpt-sr-content h2").textContent = "关键词列表(" + kwItems.length + ")";
 	}
 
 	// 引入CSS文件
