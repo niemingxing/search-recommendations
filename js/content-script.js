@@ -256,6 +256,18 @@
 				}
 			}
 		}
+		else{
+			//网络错误异常容错
+			let buttons = document.querySelectorAll('form div button');
+			for (var i = 0; i < buttons.length; i++) {
+				let buttonText = buttons[i].innerText;
+				if (buttonText.includes("Regenerate response")) {
+					console.log("存在按钮 'Regenerate response' 自动点击继续!");
+					buttons[i].click();
+					break;
+				}
+			}
+		}
 	}
 
 	/**
@@ -479,7 +491,7 @@
 	function initKeywrodsPopup() {
 		const keywrodsHtmlLayer = '<div class="gpt-sr-container">\n' +
 			'    <div class="gpt-sr-sidebar">\n' +
-			'      <button id="gpt-sr-toggleButton">显示弹层</button>\n' +
+			'      <button id="gpt-sr-toggleButton">主题列表</button>\n' +
 			'    </div>\n' +
 			'  </div>\n' +
 			'  \n' +
@@ -541,7 +553,7 @@
 			let sortedKeys = Object.keys(doList).sort(function(a, b) {
 				let timestampA = doList[a].timestamp;
 				let timestampB = doList[b].timestamp;
-				return timestampA - timestampB;
+				return timestampB - timestampA;
 			});
 
 			sortedKeys.forEach(function(key) {
@@ -605,7 +617,7 @@
 		}
 
 		let listPanel = document.querySelector("#gpt-sr-popup ul");
-		listPanel.insertBefore(itemElement,listPanel.firstChild);
+		listPanel.appendChild(itemElement);
 		updateKewordsListStatistics();
 	}
 
