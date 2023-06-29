@@ -25,13 +25,25 @@
         <div class="input-container">
             <label for="wpAppPassword" class="label">WP应用密码:</label>
             <div class="input-wrapper">
-                <input type="text" id="wpAppPassword" class="input-field" placeholder="请输入WP应用密码">
+                <input type="password" id="wpAppPassword" class="input-field" placeholder="请输入WP应用密码">
             </div>
         </div>
         <div class="input-container">
             <label for="wpPostApi" class="label">WP发帖接口:</label>
             <div class="input-wrapper">
                 <input type="text" id="wpPostApi" class="input-field" placeholder="请输入WP发帖接口">
+            </div>
+        </div>
+        <div class="input-container">
+            <label for="createPrompt" class="label">生成prompt:</label>
+            <div class="input-wrapper">
+                <textarea id="createPrompt" class="input-field" placeholder="请输入生成文章prompt"></textarea>
+            </div>
+        </div>
+        <div class="input-container">
+            <label for="cleanPrompt" class="label">洗稿prompt:</label>
+            <div class="input-wrapper">
+                <textarea id="cleanPrompt" class="input-field" placeholder="请输入清洗文章prompt"></textarea>
             </div>
         </div>
         <button id="saveButton" class="save-button">保存设置</button>

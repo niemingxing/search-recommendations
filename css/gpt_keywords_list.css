@@ -89,13 +89,13 @@
     color: #fff;
     border: none;
     cursor: pointer;
+    border-radius: 2px;
 }
 .gpt-sr-popup button:disabled {
     background-color: #ccc;
     color: #888;
     cursor: not-allowed;
 }
-
 .gpt-sr-close-btn {
     position: absolute;
     top: 0px;
@@ -118,7 +118,7 @@
     color: #fff;
     border: none;
     cursor: pointer;
-
+    border-radius: 2px;
 }
 
 .unresolved {

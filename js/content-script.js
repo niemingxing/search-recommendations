@@ -11,6 +11,7 @@
 	let statusMap = {0:"未处理",1:"已生成",2:"已发布",3:"生成中",4:"排队中"};
 	let statusColorClassMap = {0:'unresolved',1:'generated',2:'published',3:'generating',4:'queuing'};
 	let generateArticleTime = 0,generateArticleStartTime = 0;
+	let createPrompt = '',cleanPrompt = '';
 
 	/**
 	 * 获取必要的dom对象
@@ -217,7 +218,7 @@
 				//status:0-未处理，1-已完成，2-已发布
 				if (!doList.hasOwnProperty(keywordList[i])) {
 					doList[keywordList[i]] = {'keywords':keywordList[i],'status':0,'content':'','timestamp':new Date().getTime()}
-					addKeywordListItemElement({'title':keywordList[i],'status_text':statusMap[0],'status':0});
+					addKeywordListItemElement({'title':keywordList[i],'status_text':statusMap[0],'status':0},2);
 				}
 			}
 			chrome.storage.local.set({ 'pga_keywords_dolist': doList }, function() {
@@ -238,7 +239,7 @@
 			let prompt_button = document.querySelector('#prompt-textarea + button');
 			if(type ==1)
 			{
-				let prompt = "你接下来会作为我的写作助手，围绕提供的关键词生成文章标题和文章内容，每篇文章不低于1500字，全部内容输出以'[START:keywords]'标签开始，'[END:keywords]'标签结束，keywords替换为我提供的关键词，文章标题放在'[TITLE]'标签和'[/TITLE]'标签中间，文章标题和文章内容都以纯文本形式输出，不包含任何特殊格式或标记，这样的格式可以方便我后面轻松地进行文本处理和提取关键信息。现在我提供的关键词是：```{{keywords}}``"
+				let prompt = createPrompt;//"你接下来会作为我的写作助手，围绕提供的关键词生成文章标题和文章内容，每篇文章不低于1500字，全部内容输出以'[START:keywords]'标签开始，'[END:keywords]'标签结束，keywords替换为我提供的关键词，文章标题放在'[TITLE]'标签和'[/TITLE]'标签中间，文章标题和文章内容都以纯文本形式输出，不包含任何特殊格式或标记，这样的格式可以方便我后面轻松地进行文本处理和提取关键信息。现在我提供的关键词是：```{keywords}```"
 				prompt = prompt.replace("{keywords}", currentKeywords);
 				inputDispatchEventEvent(prompt_textarea, prompt);
 				setTimeout(function (){
@@ -567,6 +568,15 @@
 				}
 			});
 		});
+
+		chrome.storage.local.get('setting', function (data) {
+			createPrompt = (typeof data.setting.create_prompt !== 'undefined') ? data.setting.create_prompt : '';
+			cleanPrompt = (typeof data.setting.clean_prompt !== 'undefined') ? data.setting.clean_prompt : '';
+			console.log(createPrompt,cleanPrompt);
+			chrome.runtime.sendMessage({"type":"init_setting","setting":data.setting}, function (response) {
+				console.log(response.farewell)
+			});
+		});
 	}
 
 	/**
@@ -574,7 +584,7 @@
 	 * @param data
 	 * @returns {HTMLLIElement}
 	 */
-	function addKeywordListItemElement(data)
+	function addKeywordListItemElement(data,type = 1)
 	{
 		let itemHtml = '<span class="gpt-sr-keyword" title="' + data.title + '">' + data.title + '</span>\n' +
 			'<span class="gpt-sr-status ' + statusColorClassMap[data.status] + '">' + data.status_text + '</span>\n' +
@@ -617,7 +627,14 @@
 		}
 
 		let listPanel = document.querySelector("#gpt-sr-popup ul");
-		listPanel.appendChild(itemElement);
+		if(type == 1)
+		{
+			listPanel.appendChild(itemElement);
+		}
+		else if(type == 2)
+		{
+			listPanel.insertBefore(itemElement, listPanel.firstChild);
+		}
 		updateKewordsListStatistics();
 	}
 

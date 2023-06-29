@@ -7,9 +7,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             //像发送方发送消息，表面已经收到了消息
             sendResponse({farewell: request.type});
             console.log(request.setting);
-            wpUserName = request.setting.wp_username;
-            wpPassword = request.setting.wp_password;
-            wpApiUrl = request.setting.wp_post_api;
+            wpUserName = (typeof request.setting.wp_username !== 'undefined') ? request.setting.wp_username : '';
+            wpPassword = (typeof request.setting.wp_password !== 'undefined') ? request.setting.wp_password : '';
+            wpApiUrl = (typeof request.setting.wp_post_api !== 'undefined') ? request.setting.wp_post_api : '';
+            console.log(wpUserName,wpPassword,wpApiUrl);
         }
         else if(request.type == "publish_article")
         {
@@ -25,6 +26,11 @@ function publishArticle(data)
     if(!data.title || !data.content)
     {
         console.log("发布内容必要字段不可以为空！");
+        return;
+    }
+    else if(wpUserName == '' || wpPassword == '' || wpApiUrl == '')
+    {
+        console.log("必要发布设置为空！");
         return;
     }
     const postData = {

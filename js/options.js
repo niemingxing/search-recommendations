@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var wpUserNameInput = document.getElementById('wpUserName');
     var wpAppPasswordInput = document.getElementById('wpAppPassword');
     var wpPostApiInput = document.getElementById('wpPostApi');
+    var createPrompt = document.getElementById('createPrompt');
+    var cleanPrompt = document.getElementById('cleanPrompt');
     var saveButton = document.getElementById('saveButton');
 
     // 获取保存的密钥值并设置输入框的默认值
@@ -14,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
             wpUserNameInput.value = setting.wp_username;
             wpAppPasswordInput.value = setting.wp_password;
             wpPostApiInput.value = setting.wp_post_api;
+            createPrompt.value = setting.create_prompt;
+            cleanPrompt.value = setting.clean_prompt;
             console.log(setting);
         }
     });
@@ -25,6 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
             'wp_username':wpUserNameInput.value,
             'wp_password':wpAppPasswordInput.value,
             'wp_post_api':wpPostApiInput.value,
+            'create_prompt':createPrompt.value,
+            'clean_prompt':cleanPrompt.value
         };
         chrome.storage.local.set({ 'setting': setting }, function() {
             alert('设置已保存');

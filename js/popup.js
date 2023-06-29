@@ -2,11 +2,13 @@
 let keywords = '';
 let submitButton;
 let toolType = '';
+let createPrompt = '';
 
 document.addEventListener('DOMContentLoaded', function () {
     // 获取存储的值
     chrome.storage.local.get('setting', function (data) {
-        mKey = data.setting.mkey;
+        mKey = (typeof data.setting.mkey !== 'undefined') ? data.setting.mkey : '';
+        createPrompt = (typeof data.setting.create_prompt !== 'undefined') ? data.setting.create_prompt : '';
         // 在这里使用存储的值
         console.log(mKey);
         chrome.runtime.sendMessage({"type":"init_setting","setting":data.setting}, function (response) {
@@ -129,7 +131,7 @@ $("#submit").click(function (){
         submitButton.disabled = false;
         return;
     }
-    else if(mKey == '')
+    else if(mKey == '' || mKey)
     {
         showPopup("没有配置密钥,请点击右上角设置！");
         submitButton.disabled = false;
@@ -157,7 +159,12 @@ $("#pga_submit").click(function (){
         submitButton.disabled = false;
         return;
     }
-
+    else if(createPrompt == '')
+    {
+        showPopup("没有配置生成prompt,请点击右上角设置！");
+        submitButton.disabled = false;
+        return;
+    }
     chrome.storage.local.set({ 'pga_keywords': keywords }, function() {
         checkMKey(sendSearchMessage);
     });
