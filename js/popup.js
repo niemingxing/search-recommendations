@@ -131,7 +131,7 @@ $("#submit").click(function (){
         submitButton.disabled = false;
         return;
     }
-    else if(mKey == '' || mKey)
+    else if(mKey == '')
     {
         showPopup("没有配置密钥,请点击右上角设置！");
         submitButton.disabled = false;
