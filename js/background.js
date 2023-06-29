@@ -2,24 +2,67 @@ let wpUserName = '';
 let wpPassword = '';
 let wpApiUrl = '';
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+        console.log(request.type);
         if (request.type === "init_setting")
         {
             //像发送方发送消息，表面已经收到了消息
-            sendResponse({farewell: request.type});
-            console.log(request.setting);
             wpUserName = (typeof request.setting.wp_username !== 'undefined') ? request.setting.wp_username : '';
             wpPassword = (typeof request.setting.wp_password !== 'undefined') ? request.setting.wp_password : '';
             wpApiUrl = (typeof request.setting.wp_post_api !== 'undefined') ? request.setting.wp_post_api : '';
-            console.log(wpUserName,wpPassword,wpApiUrl);
+            sendResponse({ farewell: "Background runtime onMessage!" });
         }
         else if(request.type == "publish_article")
         {
             request.data['status'] = "publish";
             publishArticle(request.data)
+            sendResponse({ farewell: "Background runtime onMessage!" });
         }
-        sendResponse({ farewell: "Background runtime onMessage!" });
+        else if(request.type == "web_spider_collect")
+        {
+            openTabSpiderColletc(request.url)
+        }
+        else if(request.type == "web_spider_complete")
+        {
+            chrome.tabs.remove(sender.tab.id);
+            chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {'data':request.data,type:'web_spider_complete'});
+            });
+        }
     }
 );
+
+function openTabSpiderColletc(url)
+{
+    chrome.tabs.create({ url: url ,active: false}, (tab) => {
+        // 监听标签页加载完成事件
+        chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo) {
+
+            if (tabId === tab.id && changeInfo.status === "complete") {
+                // 从标签页中执行脚本以获取 DOM 内容
+                chrome.scripting.executeScript(
+                    {
+                        target: { tabId: tab.id },
+                        function: () => {
+                            const titleElement = document.querySelector("div.art_left h1");
+                            const contentElement = document.querySelector("div.art_left div.art_content");
+                            console.log("title:", titleElement.innerText);
+                            console.log("content:", contentElement.innerText);
+                            chrome.runtime.sendMessage({ 'type': 'web_spider_complete',"data":{"title":titleElement.innerText,'content':contentElement.innerText} });
+                        },
+                    },
+                    () => {
+                        // 关闭标签页
+                        chrome.tabs.remove(tab.id);
+                    }
+                );
+
+                // 移除监听器
+                chrome.tabs.onUpdated.removeListener(listener);
+            }
+        });
+    });
+
+}
 
 function publishArticle(data)
 {

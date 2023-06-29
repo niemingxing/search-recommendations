@@ -5,11 +5,11 @@
 	let keywords = '';
 	let keywordList = [];
 	let currentDomain = window.location.hostname;
-	let currentKeywords = "";
+	let currentKeywords = "",currentKeywordsAliasTitle = '';
 	let hasCompleteKeywords = [];
 	let noCompleteKeywords = [];
-	let statusMap = {0:"未处理",1:"已生成",2:"已发布",3:"生成中",4:"排队中"};
-	let statusColorClassMap = {0:'unresolved',1:'generated',2:'published',3:'generating',4:'queuing'};
+	let statusMap = {0:"未处理",1:"已生成",2:"已发布",3:"生成中",4:"排队中",5:"采集完"};
+	let statusColorClassMap = {0:'unresolved',1:'generated',2:'published',3:'generating',4:'queuing',5:'collect_completed'};
 	let generateArticleTime = 0,generateArticleStartTime = 0;
 	let createPrompt = '',cleanPrompt = '';
 
@@ -217,8 +217,8 @@
 			for (var i = 0; i < keywordList.length; i++) {
 				//status:0-未处理，1-已完成，2-已发布
 				if (!doList.hasOwnProperty(keywordList[i])) {
-					doList[keywordList[i]] = {'keywords':keywordList[i],'status':0,'content':'','timestamp':new Date().getTime()}
-					addKeywordListItemElement({'title':keywordList[i],'status_text':statusMap[0],'status':0},2);
+					doList[keywordList[i]] = {'keywords':keywordList[i],'alias_title':'','status':0,'content':'','timestamp':new Date().getTime()}
+					addKeywordListItemElement({'title':keywordList[i],'alias_title':'','status_text':statusMap[0],'status':0},2);
 				}
 			}
 			chrome.storage.local.set({ 'pga_keywords_dolist': doList }, function() {
@@ -231,7 +231,7 @@
 	/**
 	 * 发送prompt请求
 	 */
-	function sendCreatePrompt(type = 1)
+	function sendCreatePrompt(type = 1,data = '')
 	{
 		let prompt_textarea = document.querySelector('#prompt-textarea');
 		if(prompt_textarea) {
@@ -240,7 +240,16 @@
 			if(type ==1)
 			{
 				let prompt = createPrompt;//"你接下来会作为我的写作助手，围绕提供的关键词生成文章标题和文章内容，每篇文章不低于1500字，全部内容输出以'[START:keywords]'标签开始，'[END:keywords]'标签结束，keywords替换为我提供的关键词，文章标题放在'[TITLE]'标签和'[/TITLE]'标签中间，文章标题和文章内容都以纯文本形式输出，不包含任何特殊格式或标记，这样的格式可以方便我后面轻松地进行文本处理和提取关键信息。现在我提供的关键词是：```{keywords}```"
-				prompt = prompt.replace("{keywords}", currentKeywords);
+				if(checkIsUrl(currentKeywords))
+				{
+					prompt = cleanPrompt;
+					prompt = prompt.replace(/{url}/g, currentKeywords);
+					prompt = prompt.replace("{content}", data);
+				}
+				else
+				{
+					prompt = prompt.replace("{keywords}", currentKeywords);
+				}
 				inputDispatchEventEvent(prompt_textarea, prompt);
 				setTimeout(function (){
 					prompt_button.click();
@@ -269,6 +278,11 @@
 				}
 			}
 		}
+	}
+
+	function sendWebSpiderRequest(url)
+	{
+		chrome.runtime.sendMessage({ 'type': 'web_spider_collect',"url":url });
 	}
 
 	/**
@@ -395,6 +409,7 @@
 						{
 							doList[currentKeywords]['status'] = 1;
 							doList[currentKeywords]['content'] = content;
+							doList[currentKeywords]['alias_title'] = currentKeywordsAliasTitle;
 							updateKeywordsListItemElement(currentKeywords,{'title':currentKeywords,'status_text':statusMap[1],'status':1});
 						}
 					}
@@ -403,7 +418,8 @@
 						doList[currentKeywords]['status'] = 1;
 						doList[currentKeywords]['content'] = content;
 						doList[currentKeywords]['timestamp'] = new Date().getTime();
-						addKeywordListItemElement({'title':currentKeywords,'status_text':statusMap[1],'status':1});
+						doList[currentKeywords]['alias_title'] = currentKeywordsAliasTitle;
+						addKeywordListItemElement({'title':currentKeywords,'alias_title':currentKeywordsAliasTitle,'status_text':statusMap[1],'status':1});
 					}
 					chrome.storage.local.set({ 'pga_keywords_dolist': doList }, function() {
 						generateArticleTime = new Date().getTime() - generateArticleStartTime;
@@ -474,6 +490,12 @@
 		{
 			updateKeywordsListItemElement(message.data['keywords'],{'title':message.data['keywords'],'status':message.data['status'],'status_text':statusMap[message.data['status']]});
 		}
+		else if(message.type == 'web_spider_complete')
+		{
+			currentKeywordsAliasTitle = message.data.title;
+			updateKeywordsListItemElement(currentKeywords,{'title':currentKeywords,'alias_title':message.data.title,'status':5,'status_text':statusMap[5]});
+			sendCreatePrompt(1,message.data.content);
+		}
 	});
 
 	/**
@@ -528,8 +550,18 @@
 				var currentElement = event.target;
 				currentElement.disabled = true;
 				currentKeywords = noCompleteKeywords.shift();
-				sendCreatePrompt();
-				checkCreateStatus();
+				generateArticleStartTime = new Date().getTime();
+				if(checkIsUrl(currentKeywords))
+				{
+					console.log(currentKeywords);
+					sendWebSpiderRequest(currentKeywords);
+					checkCreateStatus();
+				}
+				else
+				{
+					sendCreatePrompt();
+					checkCreateStatus();
+				}
 			}
 		});
 
@@ -561,6 +593,7 @@
 				if (doList.hasOwnProperty(key)) {
 					let data = {
 						'title' : key,
+						'alias_title':doList[key]['alias_title'],
 						'status_text' : statusMap[doList[key]['status']],
 						'status':doList[key]['status']
 					};
@@ -573,9 +606,11 @@
 			createPrompt = (typeof data.setting.create_prompt !== 'undefined') ? data.setting.create_prompt : '';
 			cleanPrompt = (typeof data.setting.clean_prompt !== 'undefined') ? data.setting.clean_prompt : '';
 			console.log(createPrompt,cleanPrompt);
+
 			chrome.runtime.sendMessage({"type":"init_setting","setting":data.setting}, function (response) {
 				console.log(response.farewell)
 			});
+
 		});
 	}
 
@@ -586,7 +621,16 @@
 	 */
 	function addKeywordListItemElement(data,type = 1)
 	{
-		let itemHtml = '<span class="gpt-sr-keyword" title="' + data.title + '">' + data.title + '</span>\n' +
+		let titleHtml = data.title;
+		if(checkIsUrl(data.title))
+		{
+			titleHtml = "<a href='" + titleHtml + "' target='_blank'>" + titleHtml + "</a>";
+			if(data.hasOwnProperty("alias_title") && data['alias_title'] != "")
+			{
+				titleHtml = "<a href='" + titleHtml + "' target='_blank'>" + data['alias_title'] + "</a>";
+			}
+		}
+		let itemHtml = '<span class="gpt-sr-keyword" title="' + data.title + '">' + titleHtml + '</span>\n' +
 			'<span class="gpt-sr-status ' + statusColorClassMap[data.status] + '">' + data.status_text + '</span>\n' +
 			'<div class="gpt-sr-actions"><button class="gpt-sr-add" title="加入生成">+</button><button class="gpt-sr-delete" title="删除记录">-</button></div>';
 		const itemElement = document.createElement("li");
@@ -656,6 +700,15 @@
 			}
 
 			statusElement.classList.add(statusColorClassMap[data.status]);
+
+			let titleElement = itemElement.querySelector("span.gpt-sr-keyword");
+
+			if(checkIsUrl(key) && data.hasOwnProperty("alias_title") && data['alias_title'] != "")
+			{
+				titleElement.querySelector('a').textContent = data.alias_title;
+			}
+
+
 			let addButton = itemElement.querySelector("div.gpt-sr-actions button.gpt-sr-add");
 			if(data.status == 0)
 			{
@@ -677,6 +730,11 @@
 	{
 		let kwItems = document.querySelectorAll("#gpt-sr-popup ul li");
 		document.querySelector("#gpt-sr-popup div.gpt-sr-content h2").textContent = "关键词列表(" + kwItems.length + ")";
+	}
+
+	function checkIsUrl(str)
+	{
+		return str.includes("http://") || str.includes("https://");
 	}
 
 	// 引入CSS文件
