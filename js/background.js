@@ -11,6 +11,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             wpPassword = (typeof request.setting.wp_password !== 'undefined') ? request.setting.wp_password : '';
             wpApiUrl = (typeof request.setting.wp_post_api !== 'undefined') ? request.setting.wp_post_api : '';
             collectTag = (typeof request.setting.collect_tag !== 'undefined') ? request.setting.collect_tag : '';
+            console.log(request.setting);
             sendResponse({ farewell: "Background runtime onMessage!" });
         }
         else if(request.type == "publish_article")

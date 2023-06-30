@@ -157,11 +157,29 @@
 			}
 			else
 			{
-				keywordList.push(keywords);
-				for (let i = 97; i <= 122; i++) {
-					let character = String.fromCharCode(i);
-					keywordList.push(keywords + character);
+				keywordList = [];
+				if(keywords.includes("|"))
+				{
+					let keywordArr = keywords.split("|").filter(function(item) {
+						return item.trim() !== "";
+					});
+					keywordArr.forEach(item => {
+						keywordList.push(item);
+						for (let i = 97; i <= 122; i++) {
+							let character = String.fromCharCode(i);
+							keywordList.push(item + character);
+						}
+					});
 				}
+				else
+				{
+					keywordList.push(keywords);
+					for (let i = 97; i <= 122; i++) {
+						let character = String.fromCharCode(i);
+						keywordList.push(keywords + character);
+					}
+				}
+
 			}
 			console.log(keywordList);
 			console.log(kwIndex);
