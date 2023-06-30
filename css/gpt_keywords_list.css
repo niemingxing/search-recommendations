@@ -74,6 +74,11 @@
     overflow: hidden; /* 溢出部分隐藏 */
     text-overflow: ellipsis; /* 使用省略号替代溢出部分 */
 }
+
+.gpt-sr-keyword a{
+    color: blue;
+}
+
 .gpt-sr-status {
     text-transform: uppercase;
     font-weight: bold;

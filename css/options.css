@@ -38,7 +38,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     overflow: hidden;
-    width: 300px;
+    width: 350px;
 }
 
 .input-addon {
@@ -51,7 +51,7 @@
     flex: 1.5; /* 调整文本框宽度为当前长度的1.5倍 */
     padding: 8px;
     border: none;
-    width: 200px;
+    width: 230px;
 }
 
 .save-button {

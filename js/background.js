@@ -1,6 +1,7 @@
 let wpUserName = '';
 let wpPassword = '';
 let wpApiUrl = '';
+let collectTag = '';
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         console.log(request.type);
         if (request.type === "init_setting")
@@ -9,6 +10,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             wpUserName = (typeof request.setting.wp_username !== 'undefined') ? request.setting.wp_username : '';
             wpPassword = (typeof request.setting.wp_password !== 'undefined') ? request.setting.wp_password : '';
             wpApiUrl = (typeof request.setting.wp_post_api !== 'undefined') ? request.setting.wp_post_api : '';
+            collectTag = (typeof request.setting.collect_tag !== 'undefined') ? request.setting.collect_tag : '';
             sendResponse({ farewell: "Background runtime onMessage!" });
         }
         else if(request.type == "publish_article")
@@ -39,16 +41,17 @@ function openTabSpiderColletc(url)
 
             if (tabId === tab.id && changeInfo.status === "complete") {
                 // 从标签页中执行脚本以获取 DOM 内容
+                console.log(collectTag);
                 chrome.scripting.executeScript(
                     {
                         target: { tabId: tab.id },
-                        function: () => {
-                            const titleElement = document.querySelector("div.art_left h1");
-                            const contentElement = document.querySelector("div.art_left div.art_content");
-                            console.log("title:", titleElement.innerText);
-                            console.log("content:", contentElement.innerText);
+                        function: (collectTag) => {;
+                            let collectSetting = JSON.parse(collectTag);
+                            const titleElement = document.querySelector(collectSetting.title);
+                            const contentElement = document.querySelector(collectSetting.content);
                             chrome.runtime.sendMessage({ 'type': 'web_spider_complete',"data":{"title":titleElement.innerText,'content':contentElement.innerText} });
                         },
+                        args:[collectTag]
                     },
                     () => {
                         // 关闭标签页

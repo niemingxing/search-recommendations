@@ -443,7 +443,14 @@
 							currentKeywords = noCompleteKeywords.shift();
 							if(doList[currentKeywords]['status'] == 0)
 							{
-								sendCreatePrompt();
+								if(checkIsUrl(currentKeywords))
+								{
+									sendWebSpiderRequest(currentKeywords);
+								}
+								else
+								{
+									sendCreatePrompt();
+								}
 								return;
 							}
 						}
@@ -492,6 +499,11 @@
 		}
 		else if(message.type == 'web_spider_complete')
 		{
+			if(message.data.content == "")
+			{
+				alert("采集异常：采集内容为空！");
+				return;
+			}
 			currentKeywordsAliasTitle = message.data.title;
 			updateKeywordsListItemElement(currentKeywords,{'title':currentKeywords,'alias_title':message.data.title,'status':5,'status_text':statusMap[5]});
 			sendCreatePrompt(1,message.data.content);
@@ -597,6 +609,7 @@
 						'status_text' : statusMap[doList[key]['status']],
 						'status':doList[key]['status']
 					};
+					//console.log(data);
 					addKeywordListItemElement(data);
 				}
 			});
@@ -624,10 +637,10 @@
 		let titleHtml = data.title;
 		if(checkIsUrl(data.title))
 		{
-			titleHtml = "<a href='" + titleHtml + "' target='_blank'>" + titleHtml + "</a>";
+			titleHtml = "<a href='" + data.title + "' target='_blank'>" + data.title + "</a>";
 			if(data.hasOwnProperty("alias_title") && data['alias_title'] != "")
 			{
-				titleHtml = "<a href='" + titleHtml + "' target='_blank'>" + data['alias_title'] + "</a>";
+				titleHtml = "<a href='" + data.title + "' target='_blank'>" + data['alias_title'] + "</a>";
 			}
 		}
 		let itemHtml = '<span class="gpt-sr-keyword" title="' + data.title + '">' + titleHtml + '</span>\n' +

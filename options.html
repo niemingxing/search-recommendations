@@ -37,15 +37,23 @@
         <div class="input-container">
             <label for="createPrompt" class="label">生成prompt:</label>
             <div class="input-wrapper">
-                <textarea id="createPrompt" class="input-field" placeholder="请输入生成文章prompt"></textarea>
+                <textarea id="createPrompt" class="input-field" rows="8" placeholder="请输入生成文章prompt"></textarea>
             </div>
         </div>
         <div class="input-container">
             <label for="cleanPrompt" class="label">洗稿prompt:</label>
             <div class="input-wrapper">
-                <textarea id="cleanPrompt" class="input-field" placeholder="请输入清洗文章prompt"></textarea>
+                <textarea id="cleanPrompt" class="input-field" rows="8" placeholder="请输入清洗文章prompt"></textarea>
             </div>
         </div>
+
+        <div class="input-container">
+            <label for="collectTag" class="label">采集标签:</label>
+            <div class="input-wrapper">
+                <textarea type="text" id="collectTag" class="input-field" rows="3" placeholder="请输入采集的标签,保证标签唯一,支持querySelector,格式:{title:'div.title',content:'div.content'}"></textarea>
+            </div>
+        </div>
+
         <button id="saveButton" class="save-button">保存设置</button>
     </form>
 </div>
