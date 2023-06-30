@@ -20,10 +20,22 @@ ChatGpt自动生成文章发布：插件根据提供的主题关键词，可以�
 
 安装插件: 在Chrome Web Store中搜索"搜索推荐词采集助手"插件，并点击安装按钮进行安装。[安装教程](https://www.bilibili.com/video/BV1514y1U7Uw/?vd_source=07bc57c14ff07a0d104533f8de5fb6d3) | [代码下载](https://github.com/niemingxing/search-recommendations/archive/refs/heads/master.zip)
 
-
 使用插件: 安装完成后，在浏览器的工具栏上会显示该插件的图标。当您需要搜索特定内容时，点击插件图标，即可获取相关的搜索推荐词。[插件演示](https://www.bilibili.com/video/BV1TN411r7sp/?vd_source=07bc57c14ff07a0d104533f8de5fb6d3)
 
 免费密钥：cx-b6Gs8sjfsbOB6EeZsGhuudswBofqqhd75awjeiav
+
+配置demo：
+
+生成prompt:
+你接下来会作为我的写作助手，围绕提供的关键词生成文章标题和文章内容，每篇文章不低于1500字，全部内容输出以'[START:keywords]'标签开始，'[END:keywords]'标签结束，keywords替换为我提供的关键词，文章标题放在'[TITLE]'标签和'[/TITLE]'标签中间，文章标题和文章内容都以纯文本形式输出，不包含任何特殊格式或标记，这样的格式可以方便我后面轻松地进行文本处理和提取关键信息。现在我提供的关键词是：```{keywords}```
+
+清洗prompt:
+根据下面提供的文章生成一个200字左右总结和新的标题，抓住文本的要点，使其易于阅读和理解。避免使用复杂的句子结构或专业术语。标题放在'[TITLE]'标签和'[/TITLE]'标签中间，总结的内容以'[START:{url}]'标签开始，以'[END:{url}]'标签结束。用中文回复。请首先参考以下文本：```{content}```
+
+采集标签：
+{"title":"div.art_left h1","content":"div.art_left div.art_content"}
+
+采集站点：http://www.39.net/
 
 交流方式(使用过程中有任何问题或者有很好的idea，非常欢迎一起交流共建)：
 ![vx:histargo](https://i.ibb.co/StH3rcz/Wechat-IMG1500.jpg)
