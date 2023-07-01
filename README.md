@@ -38,4 +38,4 @@ ChatGpt自动生成和清洗文章发布：插件根据提供的主题关键词�
 采集站点：http://www.39.net/
 
 交流方式(使用过程中有任何问题或者有很好的idea，非常欢迎一起交流共建)：
-![vx:histargo](https://i.ibb.co/StH3rcz/Wechat-IMG1500.jpg)
+![vx:histargo](https://i.ibb.co/8DPf9NV/a3779b33-bfe2-4ff9-a592-f0ec090a3055.jpg)
