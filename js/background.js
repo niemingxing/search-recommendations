@@ -6,23 +6,22 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         console.log(request.type);
         if (request.type === "init_setting")
         {
-            //像发送方发送消息，表面已经收到了消息
-            wpUserName = (typeof request.setting.wp_username !== 'undefined') ? request.setting.wp_username : '';
-            wpPassword = (typeof request.setting.wp_password !== 'undefined') ? request.setting.wp_password : '';
-            wpApiUrl = (typeof request.setting.wp_post_api !== 'undefined') ? request.setting.wp_post_api : '';
-            collectTag = (typeof request.setting.collect_tag !== 'undefined') ? request.setting.collect_tag : '';
-            console.log(request.setting);
+            getSetting();
             sendResponse({ farewell: "Background runtime onMessage!" });
         }
         else if(request.type == "publish_article")
         {
             request.data['status'] = "publish";
-            publishArticle(request.data)
+            getSetting(function (){
+                publishArticle(request.data)
+            });
             sendResponse({ farewell: "Background runtime onMessage!" });
         }
         else if(request.type == "web_spider_collect")
         {
-            openTabSpiderColletc(request.url)
+            getSetting(function (){
+                openTabSpiderColletc(request.url)
+            });
         }
         else if(request.type == "web_spider_complete")
         {
@@ -111,5 +110,18 @@ function publishArticle(data)
         }
     }).catch(error => {
         console.error('发生错误:', error);
+    });
+}
+
+function getSetting(callback)
+{
+    // 获取存储的值
+    chrome.storage.local.get('setting', function (data) {
+        wpUserName = (typeof data.setting.wp_username !== 'undefined') ? data.setting.wp_username : '';
+        wpPassword = (typeof data.setting.wp_password !== 'undefined') ? data.setting.wp_password : '';
+        wpApiUrl = (typeof data.setting.wp_post_api !== 'undefined') ? data.setting.wp_post_api : '';
+        collectTag = (typeof data.setting.collect_tag !== 'undefined') ? data.setting.collect_tag : '';
+        console.log(wpUserName);
+        if(callback) callback();
     });
 }
