@@ -125,6 +125,33 @@
 		link.click();
 	}
 
+	/**
+	 * 把数组转换成csv内容
+	 * @param data
+	 * @returns {string}
+	 */
+	function convertToCSVContent(data,header=[],keysArr = []) {
+		let pHeader = header.length == 0 ? ["关键词", "内容"] : header;
+		let pKeysArr = keysArr.length ==0 ? ["title", "content"] : keysArr;
+		const rows = data.map(row => pKeysArr.map(key => formatCSVValue(row[key])).join(","));
+		return [pHeader.join(",")].concat(rows).join("\n");
+	}
+
+	/**
+	 * 格式化csv内容特殊字符
+	 * @param value
+	 * @returns {string}
+	 */
+	function formatCSVValue(value) {
+		if (typeof value === 'string') {
+			if (/[",\n\t]/.test(value)) {
+				value = value.replace(/"/g, '""');
+				value = `"${value}"`;
+			}
+		}
+		return value;
+	}
+
 	function searchByCharCode()
 	{
 		let kw = keywordList[kwIndex];
@@ -551,6 +578,7 @@
 			'  <div id="gpt-sr-popup" class="gpt-sr-popup">\n' +
 			'    <button class="gpt-sr-close-btn">&times;</button>\n' +
 			'	 <button class="gpt-sr-starting-btn">开始执行</button>\n' +
+			'	 <button class="gpt-sr-download-btn">下载数据</button>\n' +
 			'    <div class="gpt-sr-content">\n' +
 			'      <h2 class="gpt-sr-title">关键词列表</h2>\n' +
 			'      <ul class="gpt-sr-list">\n' +
@@ -593,6 +621,34 @@
 					checkCreateStatus();
 				}
 			}
+		});
+
+
+		document.querySelector("button.gpt-sr-download-btn").addEventListener("click", function() {
+			chrome.storage.local.get('pga_keywords_dolist', function(result) {
+				let doList = result.pga_keywords_dolist;
+				let sortedKeys = Object.keys(doList).sort(function(a, b) {
+					let timestampA = doList[a].timestamp;
+					let timestampB = doList[b].timestamp;
+					return timestampB - timestampA;
+				});
+				let downloadData = [];
+				sortedKeys.forEach(function(key) {
+					if (doList.hasOwnProperty(key)) {
+						if(doList[key].hasOwnProperty("alias_title") && doList[key]['alias_title'] != "")
+						{
+							downloadData.push({"title":doList[key]['alias_title'],"content":doList[key]['content']});
+						}
+						else
+						{
+							downloadData.push({"title":key,"content":doList[key]['content']});
+						}
+					}
+				});
+				console.log(downloadData);
+				let csvContent = convertToCSVContent(downloadData);
+				saveCsv(csvContent);
+			});
 		});
 
 		document.addEventListener('click', function(event) {
