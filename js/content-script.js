@@ -258,7 +258,7 @@
 			return value.trim() !== "" && self.indexOf(value) === index;
 		});
 		chrome.storage.local.get('pga_keywords_dolist', function(result) {
-			let doList = result.pga_keywords_dolist;
+			let doList = result.hasOwnProperty("pga_keywords_dolist") ? result.pga_keywords_dolist : {};
 			for (var i = 0; i < keywordList.length; i++) {
 				//status:0-未处理，1-已完成，2-已发布
 				if (!doList.hasOwnProperty(keywordList[i])) {
@@ -668,7 +668,7 @@
 		});
 
 		chrome.storage.local.get('pga_keywords_dolist', function(result) {
-			let doList = result.pga_keywords_dolist;
+			let doList = result.hasOwnProperty("pga_keywords_dolist") ? result.pga_keywords_dolist : {};
 			let sortedKeys = Object.keys(doList).sort(function(a, b) {
 				let timestampA = doList[a].timestamp;
 				let timestampB = doList[b].timestamp;

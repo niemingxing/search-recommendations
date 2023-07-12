@@ -21,8 +21,7 @@
 		"service_worker": "js/background.js"
 	},
 	"host_permissions": [
-		"http://*/*",
-		"https://*/*"
+		"https://idnsl.xyz/*"
 	],
 	"content_scripts": 
 	[
@@ -40,15 +39,6 @@
 			"resources" : ["css/gpt_keywords_list.css"],
 			"matches": [
 				"*://chat.openai.com/*"
-			]
-		},
-		{
-			"resources": [
-				"style/extension.css",
-				"script/extension.js"
-			],
-			"matches": [
-				"https://example.com/*"
 			]
 		}
 	],
