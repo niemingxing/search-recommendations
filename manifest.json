@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "搜索推荐词采集与内容生成助手",
-	"version": "1.0",
+	"version": "1.1",
 	"description": "提取小红书、抖音、B站、知乎、百度、google搜索推荐词，chatgpt关键词自动化内容生产",
 	"author": "niemingxing",
 	"icons":
