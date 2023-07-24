@@ -416,7 +416,8 @@
 	 */
 	function parseContent(keywords,content)
 	{
-		var regex = /\[TITLE\](.*?)\[\/TITLE\]/;
+		//var regex = /\[TITLE\](.*?)\[\/TITLE\]/;
+		var regex = /\[TITLE\]([\s\S]*?)\[\/TITLE\]/;
 		var matches = content.match(regex);
 		let title='';
 		if (matches && matches.length > 1) {
