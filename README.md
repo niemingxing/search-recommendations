@@ -39,5 +39,12 @@ ChatGpt自动生成和清洗文章发布：插件根据提供的主题关键词�
 
 采集站点：http://www.39.net/
 
-交流方式(使用过程中有任何问题或者有很好的idea，非常欢迎一起交流共建)：
+### 交流方式(使用过程中有任何问题或者有很好的idea，非常欢迎一起交流共建)：
+
 ![vx:histargo](https://i.ibb.co/hMbTs1G/a3779b33-bfe2-4ff9-a592-f0ec090a3055-1-2.jpg)
+
+### 赞赏鼓励(微信赞赏)
+
+![微信赞赏](https://github.com/niemingxing/search-recommendations/assets/7400829/ddd8b306-9cd4-448c-9700-4eea9ce630fb)
+
+
