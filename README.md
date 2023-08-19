@@ -24,7 +24,7 @@ ChatGpt自动生成和清洗文章发布：插件根据提供的主题关键词�
 
 使用插件: 安装完成后，在浏览器的工具栏上会显示该插件的图标。当您需要搜索特定内容时，点击插件图标，即可获取相关的搜索推荐词。[插件演示](https://www.bilibili.com/video/BV1TN411r7sp/?vd_source=07bc57c14ff07a0d104533f8de5fb6d3)
 
-免费密钥：cx-b6Gs8sjfsbOB6EeZsGhuudswBofqqhd75awjeiav
+获取密钥：加V获取密钥
 
 配置demo：
 
