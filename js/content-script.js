@@ -116,7 +116,7 @@
 	function saveCsv(csvContent)
 	{
 		// 创建一个 Blob 对象，将内容保存为 CSV 文件
-		var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+		var blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
 
 		// 生成一个临时下载链接并下载文件
 		var link = document.createElement("a");
