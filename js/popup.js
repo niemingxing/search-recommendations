@@ -89,7 +89,7 @@ function sendSearchMessage()
  */
 function checkMKey(callback)
 {
-    fetch('https://idnsl.xyz/code/check_mkey',{
+    fetch('https://api.kaipm.com/code/check_mkey',{
         method: 'POST',
         headers: {
             'Accept': 'application/json, */*',
