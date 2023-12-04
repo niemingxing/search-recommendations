@@ -390,12 +390,15 @@
 	 */
 	function checkHasCompleteKeywords(keywords)
 	{
-		let items = document.querySelectorAll('div.group.w-full div.markdown.prose.w-full');
+		//let items = document.querySelectorAll('div.group.w-full div.markdown.prose.w-full');
+		let items = document.querySelectorAll("div[data-message-author-role=\"assistant\"] div.markdown.prose.w-full");
+
 		let hasComplete = false;
 		let content = '';
 		//根据页面内容判断关键词文章是否生成
 		for (var j = 0; j < items.length; j++) {
 			let text = items[j].innerText;
+			//console.log(text);
 			if (text.includes("[START:"+keywords+"]") && text.includes("[END:"+keywords+"]")) {
 				hasComplete = true;
 				content = text;
