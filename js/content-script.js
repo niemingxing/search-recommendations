@@ -25,7 +25,7 @@
 		{
 			if(currentDomain.includes("douyin"))
 			{
-				result = document.querySelector('header form input[type=text]');
+				result = document.querySelector('header input[data-e2e="searchbar-input"]');
 			}
 			else if(currentDomain.includes("xiaohongshu"))
 			{
