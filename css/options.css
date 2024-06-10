@@ -41,6 +41,20 @@
     width: 350px;
 }
 
+
+.input-wrapper div {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+}
+
+
+.input-wrapper div input[type="radio"] {
+    margin-right: 5px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
 .input-addon {
     font-size: 14px;
     color: #555;

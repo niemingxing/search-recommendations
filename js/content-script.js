@@ -4,6 +4,8 @@
 	let csvContent = "";
 	let keywords = '';
 	let keywordList = [];
+	let collectKeywordList  = [];
+	let collectLevel = 1;
 	let currentDomain = window.location.hostname;
 	let currentKeywords = "",currentKeywordsAliasTitle = '';
 	let hasCompleteKeywords = [];
@@ -12,7 +14,14 @@
 	let statusColorClassMap = {0:'unresolved',1:'generated',2:'published',3:'generating',4:'queuing',5:'collect_completed'};
 	let generateArticleTime = 0,generateArticleStartTime = 0;
 	let createPrompt = '',cleanPrompt = '';
-
+	const downloadMarkdown = (content) => {
+		const element = document.createElement('a');
+		const file = new Blob([content], {type: 'text/markdown'});
+		element.href = URL.createObjectURL(file);
+		element.download = "data(" + currentDomain+ ").md";
+		document.body.appendChild(element);
+		element.click();
+	};
 	/**
 	 * 获取必要的dom对象
 	 * @param $type
@@ -84,29 +93,72 @@
 	 * 搜索关键词
 	 * @param keywords
 	 */
-	function search(q)
+	async function search(q)
 	{
+		csvContent += "1," + q + "\n";
+		collectKeywordList.push([1,q]);
 		let searchInput = getNeetElement("search");
 		if (searchInput) {
 			inputDispatchEventEvent(searchInput,q);
-			setTimeout(function() {
-				let recommendElements = getNeetElement("recommend");
-				// 遍历每个 div 元素并输出其 TEXT 内容
-				recommendElements.forEach(function(element) {
-					let html = element.innerHTML;
-					let text = html.replace(/<[^>]*>/g, "");
-					csvContent += text + "\n";
-					console.log(text);
-				});
-				kwIndex++;
-				if(kwIndex >= keywordList.length)
+			await sleep(3000);
+			let recommendElements = getNeetElement("recommend");
+			// 遍历每个 div 元素并输出其 TEXT 内容
+			for (let element of recommendElements) {
+				let html = element.innerHTML;
+				let text = html.replace(/<[^>]*>/g, "");
+				csvContent += "2," + text + "\n";
+				collectKeywordList.push([2,text]);
+				//获取3级关键词搜索结果
+				if(collectLevel >= 2)
 				{
-					saveCsv(csvContent);
-					return;
+					let keywords = await getSearchKeywords(text);
+					console.log(keywords);
+					for (let kw of keywords) {
+						csvContent += "3," + kw + "\n";
+						collectKeywordList.push([3,kw]);
+						//获取4级关键词搜索结果
+						if(collectLevel >= 3)
+						{
+							let keywords2 = await getSearchKeywords(kw);
+							console.log(keywords2);
+							for (let kw2 of keywords2) {
+								csvContent += "4," + kw2 + "\n";
+								collectKeywordList.push([4,kw2]);
+							}
+						}
+					}
 				}
-				searchByCharCode();
-			}, 3000); // 3000 毫秒等于 3 秒
+				console.log(text);
+			}
+			kwIndex++;
+			if(kwIndex >= keywordList.length)
+			{
+				let markdown = convertToXMindMarkdown(collectKeywordList);
+				downloadMarkdown(markdown);
+				console.log(markdown);
+				saveCsv(csvContent);
+				return;
+			}
+			await searchByCharCode();
 		}
+	}
+
+	function sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+	
+	async function getSearchKeywords(q) {
+		let searchInput = getNeetElement("search");
+		inputDispatchEventEvent(searchInput,q);
+		await sleep(3000);
+		let recommendElements = getNeetElement("recommend");
+		let keywords = [];
+		for (let element of recommendElements) {
+			let html = element.innerHTML;
+			let text = html.replace(/<[^>]*>/g, "");
+			keywords.push(text);
+		}
+		return keywords;
 	}
 
 	/**
@@ -123,6 +175,21 @@
 		link.href = URL.createObjectURL(blob);
 		link.download = "data(" + currentDomain+ ").csv";
 		link.click();
+	}
+
+	function convertToXMindMarkdown(data) {
+		let markdown = '# 采集助手\n';
+		
+		data.forEach((item, index) => {
+			let len = item[0] + 1;
+			for (let i = 0; i < len; i++) {
+				markdown += '#';
+			}
+			
+			markdown += ` ${item[1]}\n`;
+		});
+		
+		return markdown;
 	}
 
 	/**
@@ -152,17 +219,18 @@
 		return value;
 	}
 
-	function searchByCharCode()
+	async function searchByCharCode()
 	{
 		let kw = keywordList[kwIndex];
-		search(kw);
+		await search(kw);
 	}
+
 
 	/**
 	 * 收集搜索推荐词
 	 * @param data
 	 */
-	function collectSearchKeywords(data)
+	async function collectSearchKeywords(data)
 	{
 		if (data.keywords) {
 			// 将关键词信息展示在页面的搜索框中
@@ -172,10 +240,11 @@
 			kwIndex = 0;
 			keywords = data.keywords;
 			// 修改表头为 "推荐关键词"
-			let headers = ["推荐关键词"];
+			let headers = ["层级","推荐关键词"];
 			csvContent += headers.join(",") + "\n";
 
 			let hasNewline = keywords.includes("\n");
+			//hasNewline = true;
 			if(hasNewline)
 			{
 				keywordList = keywords.split("\n").filter(function(item) {
@@ -210,10 +279,11 @@
 			}
 			console.log(keywordList);
 			console.log(kwIndex);
-			searchByCharCode();
+			await searchByCharCode();
+			console.log("收集关键词数组：" + collectKeywordList);
 		}
 	}
-
+	
 	/**
 	 * input对象输入、改变、键盘事件分发
 	 * @param obj
@@ -221,6 +291,10 @@
 	 */
 	function inputDispatchEventEvent(obj,value)
 	{
+		let focusEvent = new Event('focus', {
+			bubbles: true,
+			cancelable: true
+		});
 		let inputEvent = new InputEvent('input', {
 			bubbles: true,
 			cancelable: true,
@@ -238,9 +312,11 @@
 		});
 		obj.value = value;
 		obj.focus();
+		obj.dispatchEvent(focusEvent);
 		obj.dispatchEvent(inputEvent);
 		obj.dispatchEvent(changeEvent);
 		obj.dispatchEvent(keyUpEvent);
+		console.log(value + "触发搜索");
 	}
 
 	/**
@@ -696,12 +772,11 @@
 		chrome.storage.local.get('setting', function (data) {
 			createPrompt = (typeof data.setting.create_prompt !== 'undefined') ? data.setting.create_prompt : '';
 			cleanPrompt = (typeof data.setting.clean_prompt !== 'undefined') ? data.setting.clean_prompt : '';
+			collectLevel = (typeof data.setting.level !== 'undefined') ? parseInt(data.setting.level, 10) : 1;
 			console.log(createPrompt,cleanPrompt);
-
 			chrome.runtime.sendMessage({"type":"init_setting","setting":data.setting}, function (response) {
 				console.log(response.farewell)
 			});
-
 		});
 	}
 
@@ -843,6 +918,13 @@
 			initKeywrodsPopup();
 			addStylesheet("css/gpt_keywords_list.css"); // 替换为您的CSS文件路径
 		}
+		chrome.storage.local.get('setting', function (data) {
+			collectLevel = (typeof data.setting.level !== 'undefined') ? parseInt(data.setting.level, 10) : 1;
+			console.log("采集层级：" + collectLevel);
+			chrome.runtime.sendMessage({"type":"init_setting","setting":data.setting}, function (response) {
+				console.log(response.farewell)
+			});
+		});
 	};
 
 
