@@ -239,44 +239,27 @@
 			csvContent = "";
 			kwIndex = 0;
 			keywords = data.keywords;
+			keywordList = [];
 			// 修改表头为 "推荐关键词"
 			let headers = ["层级","推荐关键词"];
 			csvContent += headers.join(",") + "\n";
-
-			let hasNewline = keywords.includes("\n");
-			//hasNewline = true;
-			if(hasNewline)
-			{
-				keywordList = keywords.split("\n").filter(function(item) {
-					return item.trim() !== "";
-				});
-			}
-			else
-			{
-				keywordList = [];
-				if(keywords.includes("|"))
-				{
-					let keywordArr = keywords.split("|").filter(function(item) {
-						return item.trim() !== "";
-					});
-					keywordArr.forEach(item => {
-						keywordList.push(item);
-						for (let i = 97; i <= 122; i++) {
-							let character = String.fromCharCode(i);
-							keywordList.push(item + character);
-						}
-					});
-				}
-				else
-				{
-					keywordList.push(keywords);
+			//关键词处理
+			let kwList = keywords.split("\n").filter(function(item) {
+				return item.trim() !== "";
+			});
+			//判断是否有占位符，存在替换为26个字母
+			kwList.forEach(item => {
+				if(item.includes("{c}")) {
+					keywordList.push(item.replace("{c}", ""));
 					for (let i = 97; i <= 122; i++) {
 						let character = String.fromCharCode(i);
-						keywordList.push(keywords + character);
+						keywordList.push(item.replace("{c}", character));
 					}
+				} else {
+					keywordList.push(item);
 				}
+			});
 
-			}
 			console.log(keywordList);
 			console.log(kwIndex);
 			await searchByCharCode();
