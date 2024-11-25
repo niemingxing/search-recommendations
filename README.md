@@ -20,6 +20,9 @@ ChatGpt自动生成和清洗文章发布：插件根据提供的主题关键词�
 
 <img width="1284" alt="image" src="https://github.com/user-attachments/assets/008fd357-2f40-4eaa-acb2-7e7dfdb608c9">
 
+<img width="477" alt="image" src="https://github.com/user-attachments/assets/880c10e7-508d-4c79-b1de-1e1e24fdfbd8">
+
+
 <img width="1278" alt="image" src="https://github.com/user-attachments/assets/d84cdc70-4c80-4596-a8e1-d70269e67bfc">
 
 使用说明:
