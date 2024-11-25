@@ -18,6 +18,10 @@ ChatGpt自动生成和清洗文章发布：插件根据提供的主题关键词�
 
 ![插件界面](https://i.ibb.co/bRfV4RM/WX20230701-172055-2x.png)
 
+<img width="1284" alt="image" src="https://github.com/user-attachments/assets/008fd357-2f40-4eaa-acb2-7e7dfdb608c9">
+
+<img width="1278" alt="image" src="https://github.com/user-attachments/assets/d84cdc70-4c80-4596-a8e1-d70269e67bfc">
+
 使用说明:
 
 安装插件: 在Chrome Web Store中搜索"搜索推荐词采集助手"插件，并点击安装按钮进行安装。[安装教程](https://www.bilibili.com/video/BV1514y1U7Uw/?vd_source=07bc57c14ff07a0d104533f8de5fb6d3) | [代码下载](https://github.com/niemingxing/search-recommendations/archive/refs/heads/master.zip)
