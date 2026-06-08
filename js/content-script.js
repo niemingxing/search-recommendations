@@ -38,7 +38,9 @@
 			}
 			else if(currentDomain.includes("xiaohongshu"))
 			{
-				result = document.querySelector('.search-input');
+				// 小红书放了同 class 的隐形蜜罐诱饵(aria-hidden/opacity:1e-05)在前面，
+				// 必须用真框的唯一 id，避免写进诱饵触发反爬(__hp_input_hit)
+				result = document.querySelector('input#search-input') || document.querySelector('input.search-input:not([aria-hidden="true"])');
 			}
 			else if(currentDomain.includes("bilibili"))
 			{
